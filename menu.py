@@ -13,9 +13,9 @@ def options():
      print('=============                 Main Menu              =============')
      print('==================================================================')
      print('|  1: Retrieve and View all instances in my Autoscale group        |')
-     print('|  2: Copy the apache access logs to a local direcory                         |')
-     #print('|  3: Copy the apache access logs to a local direcory                     |')
-     # print('|  4: Copy Nginx webserver script using SCP                       |')
+     print('|  2: Copy the apache access logs to a local direcory              |')
+     print('|  3: Generate traffic to ELB                                      |')
+     print('|  4: Check the live access logs for instances in the ELB                       |')
      # print('|  5: Change webserver script permissions                         |')
      # print('|  6: Install Python 3 on instance                                |')
      # print('|  7: Run script to check if Nginx is running and start if not    |')
@@ -29,8 +29,8 @@ def options():
      choice = input('which task do you want to perform? \n\n ')
      if choice == '1': listMyInstances(connection)
      if choice == '2': copy_access_logs_to_local()
-    # if choice == '3': 
-     # if choice == '5': make_executable() 
+     if choice == '3': generate_traffic_ELB()
+     if choice == '4': check_myInstances_Access_Logs() 
      # if choice == '6': install_python() 
      # if choice == '7': run_webserver_script()
      # if choice == '8': stop_instance()
@@ -44,6 +44,6 @@ def main():
  global connection
  connection = connect()
  options()
- 
+
 if __name__ == '__main__':
   main()

@@ -1,6 +1,6 @@
 #!/bin/bash
 x=0
 while true
-do curl cFoskin-elb-8649480.eu-west-1.elb.amazonaws.com?$x;
+do curl --silent cFoskin-elb-8649480.eu-west-1.elb.amazonaws.com?$x >/dev/null;
 x=$((x+1))
 done

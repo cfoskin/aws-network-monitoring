@@ -46,7 +46,6 @@ def listMyInstances(conn):
  else:
      for inst in myInstances:
          print("%s (%s) [%s]" % (inst.tags['Name'], inst.id, inst.state))
-        
 
 def copy_access_logs_to_local():
  if len(myInstances) == 0:
@@ -65,3 +64,17 @@ def copy_access_logs_to_local():
              print("Successful......Attempting SCP to access_logs directory....")
              run_command(cmd)
              os.system("mv ./access_logs/access_log ./access_logs/access_log_%s" % inst.ip_address)
+
+def generate_traffic_ELB():
+ cmd = "./generateTraffic.sh &" 
+ os.system(cmd)
+
+def check_myInstances_Access_Logs():
+ if len(myInstances) == 0:
+     print('No instances in Colums Autoscale group Please ensure you have instances first')
+ else:
+     cmd = "ssh -t -o StrictHostKeyChecking=no -i " + key + " " + "ec2-user@"
+     for inst in myInstances:
+         print("Connecting to instance :  %s to check the apache access_log file........." % inst.id)
+         run_command(cmd + inst.ip_address + " 'sudo cat /var/log/httpd/access_log' ")
+         time.sleep(10)
