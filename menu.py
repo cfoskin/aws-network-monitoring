@@ -13,8 +13,8 @@ def options():
      print('=============                 Main Menu              =============')
      print('==================================================================')
      print('|  1: Retrieve and View all instances in my Autoscale group        |')
-     print('|  2: View the access logs on each instance                        |')
-     print('|  3: Copy the access logs to current direcory                     |')
+     print('|  2: Copy the apache access logs to a local direcory                         |')
+     #print('|  3: Copy the apache access logs to a local direcory                     |')
      # print('|  4: Copy Nginx webserver script using SCP                       |')
      # print('|  5: Change webserver script permissions                         |')
      # print('|  6: Install Python 3 on instance                                |')
@@ -28,8 +28,8 @@ def options():
      print('==================================================================')
      choice = input('which task do you want to perform? \n\n ')
      if choice == '1': listMyInstances(connection)
-     if choice == '2': check_myInstances_Access_Logs()
-     if choice == '3': copy_access_logs_to_local()
+     if choice == '2': copy_access_logs_to_local()
+    # if choice == '3': 
      # if choice == '5': make_executable() 
      # if choice == '6': install_python() 
      # if choice == '7': run_webserver_script()
@@ -44,9 +44,6 @@ def main():
  global connection
  connection = connect()
  options()
-#getAllMyInstances(connection)
-# listMyInstances()
- #check_myInstances_Access_Logs()
-
+ 
 if __name__ == '__main__':
   main()

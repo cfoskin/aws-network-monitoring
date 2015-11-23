@@ -8,7 +8,7 @@ import os
 myInstances = []
 key = 'cfoskin_key.pem'
 
-def run_remote_command(cmd):
+def run_command(cmd):
  (status,output) = subprocess.getstatusoutput(cmd)
  if status >0:
      print("status: %d \n" % status)
@@ -47,25 +47,21 @@ def listMyInstances(conn):
      for inst in myInstances:
          print("%s (%s) [%s]" % (inst.tags['Name'], inst.id, inst.state))
         
-def check_myInstances_Access_Logs():
- if len(myInstances) == 0:
-     print('No instances in Colums Autoscale group Please ensure you have instances first')
- else:
-     cmd = "ssh -t -o StrictHostKeyChecking=no -i " + key + " " + "ec2-user@"
-     for inst in myInstances:
-        print("Connecting to instance :  %s to check the apache access_log file........." % inst.id)
-        run_remote_command(cmd + inst.ip_address + " 'sudo cat /var/log/httpd/access_log' ")
-        time.sleep(3)
 
 def copy_access_logs_to_local():
- cmd_create_directory = "mkdir access_logs"
- os.system(cmd_create_directory)
- for inst in myInstances:
-     cmd_change_owner = "ssh -t -i " + key + " ec2-user@" + inst.ip_address + " sudo chown ec2-user /var/log/httpd/"
-     cmd = "scp -i " + key + " ec2-user@"+ inst.ip_address+ ":/var/log/httpd/access_log"+ " ./access_logs"  
-     if run_remote_command(cmd_change_owner) == bool(0):
-         print("Error with chown")
-     else:
-         print("Attempting scp to current directory....")
-         run_remote_command(cmd)
-         os.system("mv ./access_logs/access_log ./access_logs/access_log_%s" % inst.ip_address)
+ if len(myInstances) == 0:
+      print('No instances in Colums Autoscale group Please ensure you have instances first')
+ else:    
+     cmd_create_directory = "mkdir access_logs"
+     run_command(cmd_create_directory)
+     for inst in myInstances:
+         print("Connecting to instance :  %s to check the apache access_log file........." % inst.id)
+         cmd_change_owner = "ssh -t -i " + key + " ec2-user@" + inst.ip_address + " sudo chown ec2-user /var/log/httpd/"
+         cmd = "scp -i " + key + " ec2-user@"+ inst.ip_address+ ":/var/log/httpd/access_log"+ " ./access_logs"  
+         print("changing owner of directory prior to SCP.....")
+         if run_command(cmd_change_owner) == bool(0):
+             print("Error with chown")
+         else:
+             print("Successful......Attempting SCP to access_logs directory....")
+             run_command(cmd)
+             os.system("mv ./access_logs/access_log ./access_logs/access_log_%s" % inst.ip_address)
