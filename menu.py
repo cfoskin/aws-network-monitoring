@@ -2,28 +2,22 @@
 #!/usr/bin/python3
 # a menu for the user
 from termcolor import colored
-from monitor import *
+from monitor_instances import *
+from manage_autoscale import *
 import sys
 connection = None
 
-def options():
+def mainOptions():
  choice = None
  while choice != '0':
-     print(colored("\n\n Welcome  ", 'green',attrs=['reverse', 'blink']))
+     print(colored("\n\n Welcome to the Main Menu  ", 'green',attrs=['reverse', 'blink']))
      print('=============                 Main Menu              =============')
      print('==================================================================')
      print('|  1: Retrieve and View all instances in my Autoscale group        |')
      print('|  2: Copy the apache access logs to a local direcory              |')
      print('|  3: Generate traffic to ELB                                      |')
      print('|  4: Check the access logs for instances in the ELB               |')
-     print('|  5: Create a new policy for my autoscale group                   |')
-     # print('|  6: Install Python 3 on instance                                |')
-     # print('|  7: Run script to check if Nginx is running and start if not    |')
-     # print('|  8: Stop Instance                                               |')
-     # print('|  9: Terminate Instance                                          |')
-     # print(colored('|  t: Test nginx is running correctly using lynx                  |','green'))
-     # print(colored('|  l: View  Nginx acces log file                                  |','green'))
-     # print(colored('|  e: View local ec2 error log                                    |','green'))
+     print('|  5: Manage Autoscale Group                                       |')
      print(colored('|  0: EXIT                                                        |', 'red'))
      print('==================================================================')
      choice = input('which task do you want to perform? \n\n ')
@@ -31,19 +25,27 @@ def options():
      if choice == '2': copy_access_logs_to_local()
      if choice == '3': generate_traffic_ELB()
      if choice == '4': check_myInstances_Access_Logs() 
-     if choice == '5': create_new_scaling_policy() 
-     # if choice == '7': run_webserver_script()
-     # if choice == '8': stop_instance()
-     # if choice == '9': terminate_instance()
-     # if choice == 't': test()
-     # if choice == 'l': nginx_log()
-     # if choice == 'e': view_error_log()
-     if choice == '0': sys.exit(0)    
+     if choice == '5': autoscaleOptions() 
+     if choice == '0': sys.exit(0)  
+
+def autoscaleOptions():
+ choice = None
+ while choice != '0':
+     print(colored("\n\n Welcome To The Autoscale Menu ", 'green',attrs=['reverse', 'blink']))
+     print('==================================================================')
+     print('|  1: Create new policies for my autoscale group                   |')
+     print('|  2: Create new cloud watch alarm                                 |')
+     print(colored('|  0: Return to Main Menu                                                       |', 'red'))
+     print('==================================================================')
+     choice = input('which task do you want to perform? \n\n ')
+     if choice == '1': create_new_scaling_policies()
+     if choice == '2': create_cloudwatch_alarm()
+     if choice == '0': mainOptions()   
 
 def main():
  global connection
  connection = connect()
- options()
+ mainOptions()
 
 if __name__ == '__main__':
   main()
