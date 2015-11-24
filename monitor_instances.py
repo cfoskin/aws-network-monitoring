@@ -38,8 +38,7 @@ def getAllMyInstances(conn):
              if inst.tags['Name'] == 'PA_cFoskin_AS_group':
                  myInstances.append(inst)
  
-def listMyInstances(conn):
- getAllMyInstances(conn)#gather my instances and store them in an array
+def listMyInstances():
  print('There are %d instances in Colums Autoscale group \n' % len(myInstances))
  if len(myInstances) == 0:
      print('No instances in Colums Autoscale group Please ensure you have instances first')
@@ -67,7 +66,9 @@ def copy_access_logs_to_local():
 
 def generate_traffic_ELB():
  cmd = "./generateTraffic.sh &" 
+ print('Executing The generateTraffic.sh script.....')
  os.system(cmd)
+ print('Traffic is now being generated using curl...\n')
 
 def check_myInstances_Access_Logs():
  if len(myInstances) == 0:
@@ -75,6 +76,7 @@ def check_myInstances_Access_Logs():
  else:
      cmd = "ssh -t -o StrictHostKeyChecking=no -i " + key + " " + "ec2-user@"
      for inst in myInstances:
-         print("Connecting to instance :  %s to check the apache access_log file........." % inst.id)
+         print("Connecting to instance :  %s to check the apache access_log file.........\n" % inst.id)
          run_command(cmd + inst.ip_address + " 'sudo cat /var/log/httpd/access_log' ")
          time.sleep(10)
+         print('Now checking the next instance in your group..\n')
