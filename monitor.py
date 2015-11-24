@@ -3,6 +3,11 @@
 import subprocess
 import boto
 import boto.ec2
+import boto.ec2.autoscale
+from boto.ec2.autoscale import ScalingPolicy
+from boto.sns import connect_to_region
+from boto.ec2.cloudwatch import connect_to_region
+from boto.ec2.elb import ELBConnection
 import time
 import os
 myInstances = []
@@ -78,3 +83,44 @@ def check_myInstances_Access_Logs():
          print("Connecting to instance :  %s to check the apache access_log file........." % inst.id)
          run_command(cmd + inst.ip_address + " 'sudo cat /var/log/httpd/access_log' ")
          time.sleep(10)
+
+def create_new_scaling_policy():
+ autoscale_conn = boto.ec2.autoscale.connect_to_region('eu-west-1') 
+ print(autoscale_conn)
+ # lc = autoscale_conn.get_all_launch_configurations(names=['cFoskin_lc'])
+ # print(lc)
+ # myLc = lc[0]
+ # print(myLc)
+ asGroups = autoscale_conn.get_all_groups(names=['cFoskin_aGroup'])
+ print(asGroups)
+ myASGroup = asGroups[0]
+ print(myASGroup)
+ myTag = myASGroup.tags[0]
+ print(myTag)
+ scale_up_policy = ScalingPolicy(name='Scale up policy', adjustment_type='ChangeInCapacity', as_name='cFoskin_aGroup', scaling_adjustment=1, cooldown=180)
+ autoscale_conn.create_scaling_policy(scale_up_policy)
+ scale_down_policy = ScalingPolicy(name='Scale down policy', adjustment_type='ChangeInCapacity', as_name='cFoskin_aGroup', scaling_adjustment=1, cooldown=180)
+ autoscale_conn.create_scaling_policy(scale_down_policy)
+
+def set_up_cloudwatch_alarm():
+ sns_conn = boto.sns.connect_to_region('eu-west-1')
+ topics = sns_conn.get_all_topics()
+ topic = topics[u'ListTopicsResponse']['ListTopicsResult']['Topics'][0]['TopicArn']
+ cloudwatch_conn = boto.ec2.cloudwatch.connect_to_region('eu-west-1')
+ alarm_name = 'columCpuMetricAlarm'
+
+ 
+
+ elb_conn = boto.ec2.elb.connect_to_region('eu-west-1')
+ elb = elb_conn.get_all_load_balancers(load_balancer_names='cFoskin-elb')[0]
+ anInstance = myLb.instances[0]
+
+ metric = cloudwatch_conn.list_metrics(dimensions={'InstanceId'::anInstance.id}, metric_name="CPUUtilization")[0]
+ alarm = metric.create_alarm(name=alarm_name, comparison='>', threshold=60, period=300, evaluation_periods=1, statistic= 'Average', alarm_actions=[topic])
+ 
+ policyResults = autoscale_conn.get_all_policies(as_group='cFoskin_aGroup', policy_names=[scale_up_policy])
+ scale_up_policy = policyResults[0]
+
+ alarm_actions = []
+ alarm_actions.append(scale_up_policy.policy_arn)
+ cloudwatch_conn.create_alarm(alarm)
