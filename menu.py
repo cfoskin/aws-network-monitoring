@@ -21,7 +21,7 @@ def mainOptions():
      print('==================================================================')
      print('|  1: View all instances in my Autoscale group                     |')
      print('|  2: Manage Autoscale Group                                       |')
-     print('|  3: View options for Elb and Instance Access log management      |')              
+     print('|  3: Utility Management                                           |')              
      print(colored('|  0: EXIT                                                        |', 'red'))
      print('==================================================================')
      choice = input('which task do you want to perform? \n\n ')
@@ -40,12 +40,29 @@ def utility_options():
      print('|  1: Generate traffic to ELB                                      |')
      print('|  2: View the access logs for the instances                       |')
      print('|  3: Copy the apache access logs to a local direcory              |')    
-     print(colored('|  0: Return to Main Menu                                                       |', 'red'))
+     print('|  4: Check Cpu stats of an MyInstances                            |')         
+     print(colored('|  0: Return to Main Menu                                         |', 'red'))
      print('==================================================================')
      choice = input('which task do you want to perform? \n\n ')
      if choice == '1': generate_traffic_ELB()
      if choice == '2': check_myInstances_Access_Logs()
      if choice == '3': copy_access_logs_to_local()
+     if choice == '4': instance_stats_options()
+     if choice == '0': mainOptions()   
+
+#utility menu
+def instance_stats_options():
+ choice = None
+ while choice != '0':
+     print(colored("\n\n Welcome To The Stats Menu ", 'green',attrs=['reverse', 'blink']))
+     print('==================================================================')
+     print('|  1: View network statistics                                      |')
+     print('|  2: View virtual memory stats                                    |')     
+     print(colored('|  0: Return to Main Menu                                          |', 'red'))
+     print('==================================================================')
+     choice = input('which task do you want to perform? \n\n ')
+     if choice == '1': view_network_stats()
+     if choice == '2': virtual_memory_stats()
      if choice == '0': mainOptions()   
 
 #autoscaling menu
@@ -57,7 +74,7 @@ def autoscaleOptions():
      print('|  1: Create new policies for my autoscale group                   |')
      print('|  2: Create new cloud watch alarm                                 |')
      print(colored('|  3: Trigger an autoscaling scale up event based on new policy    |', 'green'))
-     print(colored('|  0: Return to Main Menu                                                       |', 'red'))
+     print(colored('|  0: Return to Main Menu                                          |', 'red'))
      print('==================================================================')
      choice = input('which task do you want to perform? \n\n ')
      if choice == '1': policy_Options()
