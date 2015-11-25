@@ -85,6 +85,12 @@ def generate_traffic_ELB():
  os.system(cmd)
  print('Traffic is now being generated using curl...\n')
 
+#script installs siege and runs mimicing 500 users
+def use_siege():
+ print('Executing The siege.sh script.....')
+ cmd_run_siege = "./siege.sh"
+ os.system(cmd_run_siege)
+
 #check the logs without copying down
 def check_myInstances_Access_Logs():
  if len(myInstances) == 0:

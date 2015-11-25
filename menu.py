@@ -37,10 +37,11 @@ def utility_options():
  while choice != '0':
      print(colored("\n\n Welcome To The Utility Menu ", 'green',attrs=['reverse', 'blink']))
      print('==================================================================')
-     print('|  1: Generate traffic to ELB                                      |')
+     print('|  1: Generate traffic to ELB using curl                           |')
      print('|  2: View the access logs for the instances                       |')
      print('|  3: Copy the apache access logs to a local direcory              |')    
-     print('|  4: Check Cpu stats of an MyInstances                            |')         
+     print('|  4: Check Cpu stats of an MyInstances                            |')  
+     print('|  5: Use siege script to test Application load                    |')       
      print(colored('|  0: Return to Main Menu                                         |', 'red'))
      print('==================================================================')
      choice = input('which task do you want to perform? \n\n ')
@@ -48,6 +49,7 @@ def utility_options():
      if choice == '2': check_myInstances_Access_Logs()
      if choice == '3': copy_access_logs_to_local()
      if choice == '4': instance_stats_options()
+     if choice == '5': use_siege()
      if choice == '0': mainOptions()   
 
 #utility menu
