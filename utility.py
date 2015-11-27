@@ -37,14 +37,16 @@ def connect():
 
 #retrieve all my instances
 def getAllMyInstances(conn):
- reservations = conn.get_all_reservations()
  global myInstances
+ myInstances[:] = []
+ reservations = conn.get_all_reservations()
  for res in reservations:
      for inst in res.instances:
          if 'Name' in inst.tags:
              if inst.tags['Name'] == 'PA_cFoskin_AS_group':
-                 if not inst in myInstances:
+                 if inst.state == 'running':
                      myInstances.append(inst)
+                 #if not inst in myInstances:
  
 #list instances 
 def listMyInstances():
@@ -65,19 +67,20 @@ def copy_access_logs_to_local():
      cmd_create_directory = "mkdir access_logs"
      run_command(cmd_create_directory)#make a local dir for them
      for inst in myInstances:
-         print("Connecting to instance :  %s to check the apache access_log file........." % inst.id)
-         #change owner of httpd dir as its sudo protected
-         cmd_change_owner = "ssh -t -i " + key + " ec2-user@" + inst.ip_address + " sudo chown ec2-user /var/log/httpd/"
-         cmd = "scp -i " + key + " ec2-user@"+ inst.ip_address+ ":/var/log/httpd/access_log"+ " ./access_logs"  
-         print("changing owner of directory prior to SCP.....")
-         if run_command(cmd_change_owner) == bool(0):
-             print("Error with chown")
-         else:
-             print("Successful......Attempting SCP to access_logs directory....")
-             run_command(cmd)
-             #rename each access_log file by tagging it with the id
-             os.system("mv ./access_logs/access_log ./access_logs/access_log_%s" % inst.ip_address)
-
+         if inst.state == 'running':    
+             print("Connecting to instance :  %s to check the apache access_log file........." % inst.id)
+             #change owner of httpd dir as its sudo protected
+             cmd_change_owner = "ssh -t -i " + key + " ec2-user@" + inst.ip_address + " sudo chown ec2-user /var/log/httpd/"
+             cmd = "scp -i " + key + " ec2-user@"+ inst.ip_address+ ":/var/log/httpd/access_log"+ " ./access_logs"  
+             print("changing owner of directory prior to SCP.....")
+             if run_command(cmd_change_owner) == bool(0):
+                 print("Error with chown")
+             else:
+                 print("Successful......Attempting SCP to access_logs directory....")
+                 run_command(cmd)
+                 #rename each access_log file by tagging it with the id
+                 os.system("mv ./access_logs/access_log ./access_logs/access_log_%s" % inst.ip_address)
+        
 #use curl to generate trafffic to elb - used for examing the algorithm of elb
 def generate_traffic_ELB():
  cmd = "./generateTraffic.sh &" 
@@ -98,28 +101,31 @@ def check_myInstances_Access_Logs():
  else:
      cmd = "ssh -t -o StrictHostKeyChecking=no -i " + key + " " + "ec2-user@"
      for inst in myInstances:
-         print("Connecting to instance :  %s to check the apache access_log file.........\n" % inst.id)
-         run_command(cmd + inst.ip_address + " 'sudo cat /var/log/httpd/access_log' ")
-         print(' Checking the next instance in your group... \n')
-         time.sleep(12)#allow time to read them before moving to next
+         if inst.state == 'running':
+             print("Connecting to instance :  %s to check the apache access_log file.........\n" % inst.id)
+             run_command(cmd + inst.ip_address + " 'sudo cat /var/log/httpd/access_log' ")
+             time.sleep(12)#allow time to read them before moving to next
 
 #allow the user to view the network statistics of any instance
 def view_instance_stats(cmd):
- index = 0
- for inst in myInstances:
-     if inst.state == 'running':
-         print("%d %s (%s) [%s]" % (index, inst.tags['Name'], inst.id, inst.state))
-         index = index+1 
- choice = input('choose and instance index.. \n\n ') 
- if int(choice) < len(myInstances):
-     chosen_instance = myInstances[int(choice)]
-     print(chosen_instance.ip_address)
-     cmd = "ssh -t -o StrictHostKeyChecking=no -i " + key + " " "ec2-user@" + chosen_instance.ip_address + cmd
-     print('connecting .......')
-     run_command(cmd)
- else: print('please choose a correct index')   
+ if len(myInstances) == 0:
+     print('No instances in Colums Autoscale group Please ensure you have instances first')
+ else:
+     index = 0
+     for inst in myInstances:
+         if inst.state == 'running':
+             print("%d %s (%s) [%s]" % (index, inst.tags['Name'], inst.id, inst.state))
+             index = index+1 
+     choice = input('choose and instance index.. \n\n ') 
+     if int(choice) < len(myInstances) and int(choice) >=0:
+         chosen_instance = myInstances[int(choice)]
+         print("instance is: "+chosen_instance.ip_address)
+         cmd = "ssh -t -o StrictHostKeyChecking=no -i " + key + " " "ec2-user@" + chosen_instance.ip_address + cmd
+         print('connecting .......')
+         run_command(cmd)
+     else: print('please choose a correct index')   
  
-#view networ stats
+#view networt stats
 def view_network_stats():
  cmd = " 'netstat -a' "
  view_instance_stats(cmd)

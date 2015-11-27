@@ -16,6 +16,7 @@ autoscale_conn = None
 cloudwatch_conn = None
 alarm_dimensions = None
 alarm_tag = 'cFoskin_'
+scaling_policy_tag = 'generated_'
 
 #open autoscale connection
 def open_autoscale_conn():
@@ -25,8 +26,9 @@ def open_autoscale_conn():
 #allows the user to create a policy to scale up
 def create_scale_up_policy():
  name = input('Enter The Name of Your new policy.. \n\n ')
+ scale_up_policy_name_tag = scaling_policy_tag + name
  global scale_up_policy
- scale_up_policy = ScalingPolicy(name=name, adjustment_type='ChangeInCapacity', as_name='cFoskin_aGroup', scaling_adjustment=1, cooldown=180)
+ scale_up_policy = ScalingPolicy(name=scale_up_policy_name_tag, adjustment_type='ChangeInCapacity', as_name='cFoskin_aGroup', scaling_adjustment=1, cooldown=180)
  autoscale_conn.create_scaling_policy(scale_up_policy)
  policyResults = autoscale_conn.get_all_policies(as_group='cFoskin_aGroup', policy_names=[scale_up_policy])
  scale_up_policy = policyResults[0]#Refresh to get Amazon Resource Name (ARN) of policy
@@ -37,8 +39,9 @@ def create_scale_up_policy():
 #allows the user to create a policy to scale down
 def create_scale_downPolicy():
  name = input('Enter The Name of Your new policy.. \n\n ')
+ scale_down_policy_name_tag = scaling_policy_tag + name
  global scale_down_policy
- scale_down_policy = ScalingPolicy(name=name, adjustment_type='ChangeInCapacity', as_name='cFoskin_aGroup', scaling_adjustment=-1, cooldown=180)
+ scale_down_policy = ScalingPolicy(name=scale_down_policy_name_tag, adjustment_type='ChangeInCapacity', as_name='cFoskin_aGroup', scaling_adjustment=-1, cooldown=180)
  autoscale_conn.create_scaling_policy(scale_down_policy) 
  policyResults = autoscale_conn.get_all_policies(as_group='cFoskin_aGroup', policy_names=[scale_down_policy])
  scale_down_policy = policyResults[0]#Refresh to get Amazon Resource Name (ARN) of policy
@@ -49,7 +52,7 @@ def create_scale_downPolicy():
 def create_scale_up_alarm():
  name = input('Enter The Name of Your new Alarm.. \n\n ')
  scale_up_alarm_name= alarm_tag + name
- scale_up_alarm = MetricAlarm(name=scale_up_alarm_name, namespace='AWS/EC2',metric='CPUUtilization', statistic='Average',comparison='>', threshold='40', period='60', evaluation_periods=2,alarm_actions=[scale_up_policy.policy_arn],dimensions=alarm_dimensions)
+ scale_up_alarm = MetricAlarm(name=scale_up_alarm_name, namespace='AWS/EC2',metric='CPUUtilization', statistic='Average',comparison='>', threshold='60', period='60', evaluation_periods=2,alarm_actions=[scale_up_policy.policy_arn],dimensions=alarm_dimensions)
  cloudwatch_conn.create_alarm(scale_up_alarm)
  print('The cloud watch alarm : %s is now created....\n' % scale_up_alarm_name)
  return bool(1)
@@ -58,7 +61,7 @@ def create_scale_up_alarm():
 def create_scale_down_alarm():
  name = input('Enter The Name of Your new Alarm.. \n\n ') 
  scale_down_alarm_name = alarm_tag + name
- scale_down_alarm = MetricAlarm(name=scale_down_alarm_name, namespace='AWS/EC2',metric='CPUUtilization', statistic='Average',comparison='<', threshold='35', period='60', evaluation_periods=2,alarm_actions=[scale_down_policy.policy_arn],dimensions=alarm_dimensions)
+ scale_down_alarm = MetricAlarm(name=scale_down_alarm_name, namespace='AWS/EC2',metric='CPUUtilization', statistic='Average',comparison='<', threshold='50', period='60', evaluation_periods=2,alarm_actions=[scale_down_policy.policy_arn],dimensions=alarm_dimensions)
  cloudwatch_conn.create_alarm(scale_down_alarm)
  print('The cloud watch alarm : %s is now created....\n' % scale_down_alarm_name)
  return bool(1)

@@ -13,7 +13,6 @@ scaling_down_alarm_created = bool(0)
 
 #main menu
 def mainOptions():
- getAllMyInstances(connection)#gather my instances and store them in an array
  choice = None
  while choice != '0':
      print(colored("\n\n Welcome to the Main Menu  ", 'green',attrs=['reverse', 'blink']))
@@ -25,23 +24,25 @@ def mainOptions():
      print(colored('|  0: EXIT                                                        |', 'red'))
      print('==================================================================')
      choice = input('which task do you want to perform? \n\n ')
-     if choice == '1': listMyInstances()
+     if choice == '1': 
+         print('retrieving instances.....')
+         getAllMyInstances(connection)
+         listMyInstances()
      if choice == '2': autoscaleOptions()
      if choice == '3': utility_options()
      if choice == '0': sys.exit(0)  
 
 #utility menu
 def utility_options():
- getAllMyInstances(connection)#gather my instances and store them in an array
  choice = None
  while choice != '0':
      print(colored("\n\n Welcome To The Utility Menu ", 'green',attrs=['reverse', 'blink']))
      print('==================================================================')
-     print('|  1: Generate traffic to ELB using curl                           |')
+     print('|  1: Generate test traffic to ELB using curl                      |')
      print('|  2: View the access logs for the instances                       |')
      print('|  3: Copy the apache access logs to a local direcory              |')    
      print('|  4: Check Cpu stats of an MyInstances                            |')  
-     print('|  5: Use siege script to test Application load                    |')       
+     print('|  5: Use siege script to Generate test traffic                    |')       
      print(colored('|  0: Return to Main Menu                                         |', 'red'))
      print('==================================================================')
      choice = input('which task do you want to perform? \n\n ')
@@ -112,8 +113,8 @@ def cloud_watch_options():
  choice = None
  while choice != '0':
      print('==================================================================')
-     print(colored('|  1: Create a scaling up cloud watch alarm                       |', 'green'))
-     print(colored('|  2: Create a scaling down cloud watch alarm                     |', 'green'))
+     print(colored('|  1: Create a scaling up cloud watch alarm on CPU usage             |', 'green'))
+     print(colored('|  2: Create a scaling down cloud watch alarm on CPU usage           |', 'green'))
      print(colored('|  0: Return to Autoscale menu                         |', 'red'))
      print('==================================================================')
      choice = input('which task do you want to perform? \n\n ')
@@ -132,6 +133,7 @@ def cloud_watch_options():
 def main():
  global connection
  connection = connect()
+ getAllMyInstances(connection)
  mainOptions()
 
 if __name__ == '__main__':

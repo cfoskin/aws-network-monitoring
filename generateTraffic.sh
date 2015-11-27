@@ -1,3 +1,4 @@
+#colum foskin 20062042
 #!/bin/bash
 x=0
 while true
