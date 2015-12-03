@@ -1,4 +1,4 @@
-#colum foskin 20062042
+#colum foskin
 #!/usr/bin/python3
 import subprocess
 import boto
@@ -6,7 +6,7 @@ import boto.ec2
 import time
 import os
 myInstances = []
-key = 'cfoskin_key.pem'
+key = 'your_key.pem'
 
 # This python module provides functionality such as retrieving instances in my autoscaling group
 # and some other features such as generating traffic to the elb using a curl script,
@@ -62,7 +62,7 @@ def listMyInstances():
 #copy access logs from each instance locally
 def copy_access_logs_to_local():
  if len(myInstances) == 0:
-      print('No instances in Colums Autoscale group Please ensure you have instances first')
+      print('No instances in Autoscale group Please ensure you have instances first')
  else:    
      cmd_create_directory = "mkdir access_logs"
      run_command(cmd_create_directory)#make a local dir for them
@@ -109,7 +109,7 @@ def check_myInstances_Access_Logs():
 #allow the user to view the network statistics of any instance
 def view_instance_stats(cmd):
  if len(myInstances) == 0:
-     print('No instances in Colums Autoscale group Please ensure you have instances first')
+     print('No instances in Autoscale group Please ensure you have instances first')
  else:
      index = 0
      for inst in myInstances:

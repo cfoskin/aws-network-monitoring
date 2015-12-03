@@ -1,4 +1,4 @@
-#colum foskin 20062042
+#colum foskin 
 while true;
 do x=0;
 done;

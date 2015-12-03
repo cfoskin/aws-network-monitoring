@@ -1,4 +1,4 @@
-#colum foskin 20062042
+#colum foskin 
 #!/usr/bin/python3
 # This python module provides functionality for the options in the autoscaling menus and sub menus
 # in the menu module. It provides functionality for creating autoscaling alarms and policies while also allows

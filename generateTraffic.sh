@@ -1,4 +1,4 @@
-#colum foskin 20062042
+#colum foskin 
 #!/bin/bash
 x=0
 while true

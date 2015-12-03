@@ -1,4 +1,4 @@
-#colum foskin 20062042
+#colum foskin 
 #!/usr/bin/python3
 #A set of menus for the user
 from termcolor import colored
